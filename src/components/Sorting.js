@@ -4,12 +4,16 @@ import {
     sortingBtnRecentEl,
     sortingBtnRelevantEl
 } from '../App.js'
+
 import renderJobList from './JobList.js'
+import renderPaginationButtons from './Pagination.js'
 
 function clickHandler(event) {
     const clickedButtonE1 = event.target.closest('.sorting__button');
 
     if(!clickedButtonE1) return;
+    state.currentPage = 1;
+
 
     const recent = clickedButtonE1.className.includes('--recent')? true : false;
     
@@ -34,7 +38,7 @@ function clickHandler(event) {
         })
 
     }
-
+    renderPaginationButtons();
     renderJobList();
 
 }

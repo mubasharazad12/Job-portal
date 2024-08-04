@@ -4,7 +4,8 @@ import{
     jobDetailsContentEl,
     BASE_API_URL,
     getData,
-    state
+    state,
+    RESULTS_PER_PAGE
 } from '../App.js';
 
 import renderSpinner from './Spinner.js';
@@ -16,9 +17,9 @@ function renderJobList() {
     jobListSearchEl.innerHTML = '';
 
     //display job items
-    state.serachJobItems.slice(0,7).forEach(jobitem =>{
+    state.serachJobItems.slice(state.currentPage * RESULTS_PER_PAGE - RESULTS_PER_PAGE, state.currentPage * RESULTS_PER_PAGE).forEach(jobitem =>{
         const newJobItemHTML= `
-        <li class="job-item">
+        <li class="job-item ${state.activeJobItem.id === jobitem.id ? 'job-item--active' : ''}">
             <a class="job-item__link" href="${jobitem.id}">
                 <div class="job-item__badge ${jobitem.badgeLetters}">${jobitem.badgeLetters}</div>
                 <div class="job-item__middle">
@@ -58,6 +59,12 @@ async function clickHandler(event){
 
     // get id
     const id = jobItemEl.children[0].getAttribute('href');
+
+    state.activeJobItem = state.serachJobItems.find(jobItem => jobItem.id === +id);
+
+    history.pushState(null, '' , `/#${id}`);
+
+
     const badgeColor = jobItemEl.children[0].children[0].getAttribute('class');
 
     try {
