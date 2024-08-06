@@ -5,8 +5,10 @@ export const RESULTS_PER_PAGE = 7;
 // State
 export const state = {
     serachJobItems : [],
+    bookmarkJobItems : [],
     currentPage : 1 ,
     activeJobItem : {}
+  
 }
 
 //selectors

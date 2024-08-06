@@ -1,6 +1,7 @@
 import{
 
     jobListSearchEl,
+    jobListBookmarksEl,
     jobDetailsContentEl,
     BASE_API_URL,
     getData,
@@ -12,12 +13,25 @@ import renderSpinner from './Spinner.js';
 import renderJonDetails from './JobDetails.js';
 import renderError from './Error.js';
 
-function renderJobList() {
+function renderJobList(whichJobList = 'search') {
+    //determine the searches
+
+    const jobListEl = whichJobList === 'search' ? jobListSearchEl : jobListBookmarksEl;
+
+
     //remove old searches
-    jobListSearchEl.innerHTML = '';
+    jobListEl.innerHTML = '';
+
+    //determine the job items
+    let jobItems;
+    if(whichJobList === 'search'){
+        jobItems = state.serachJobItems.slice(state.currentPage * RESULTS_PER_PAGE - RESULTS_PER_PAGE, state.currentPage * RESULTS_PER_PAGE);
+    }else if(whichJobList === 'bookmarks'){
+        jobItems =  state.bookmarkJobItems;
+    }
 
     //display job items
-    state.serachJobItems.slice(state.currentPage * RESULTS_PER_PAGE - RESULTS_PER_PAGE, state.currentPage * RESULTS_PER_PAGE).forEach(jobitem =>{
+    jobItems.forEach(jobitem =>{
         const newJobItemHTML= `
         <li class="job-item ${state.activeJobItem.id === jobitem.id ? 'job-item--active' : ''}">
             <a class="job-item__link" href="${jobitem.id}">
@@ -32,13 +46,13 @@ function renderJobList() {
                     </div>
                 </div>
                 <div class="job-item__right">
-                    <i class="fa-solid fa-bookmark job-item__bookmark-icon"></i>
+                    <i class="fa-solid fa-bookmark job-item__bookmark-icon ${state.bookmarkJobItems.some(item => item.id === jobitem.id) ? 'job-item__bookmark-icon--bookmarked' : ''}"></i>
                     <time class="job-item__time">${jobitem.daysAgo}d</time>
                 </div>
             </a>
         </li>
         `;
-        jobListSearchEl.insertAdjacentHTML('beforeend' , newJobItemHTML);
+        jobListEl.insertAdjacentHTML('beforeend' , newJobItemHTML);
     });
 }
 
@@ -48,11 +62,10 @@ async function clickHandler(event){
 
     const jobItemEl = event.target.closest('.job-item');
 
-    document.querySelector('.job-item--active')?.classList.remove('job-item--active');
+    document.querySelectorAll('.job-item--active').forEach(items =>{
+        items.classList.remove('job-item--active');
+    })
     
-
-    jobItemEl.classList.add('job-item--active');
-
 
     jobDetailsContentEl.innerHTML = '';
     renderSpinner('job-details');
@@ -60,7 +73,10 @@ async function clickHandler(event){
     // get id
     const id = jobItemEl.children[0].getAttribute('href');
 
-    state.activeJobItem = state.serachJobItems.find(jobItem => jobItem.id === +id);
+    const allJobItems = [...state.serachJobItems, ...state.bookmarkJobItems];
+    state.activeJobItem = allJobItems.find(jobItem => jobItem.id === +id);
+
+    renderJobList();
 
     history.pushState(null, '' , `/#${id}`);
 
@@ -79,7 +95,19 @@ async function clickHandler(event){
         renderSpinner('job-details');
         renderError(error.message);
     }
-   
+
+
+};
+jobListSearchEl.addEventListener('click' , clickHandler);
+jobListBookmarksEl.addEventListener('click' , clickHandler);
+
+
+
+export default renderJobList;
+
+
+
+
     // fetch(`${BASE_API_URL}/jobs/${id}`)
     //     .then(response => {
     //         if(!response.ok){
@@ -99,11 +127,3 @@ async function clickHandler(event){
     //         renderError(error.message);
     //     }
     //     );
-        
-
-
-};
-jobListSearchEl.addEventListener('click' , clickHandler);
-
-
-export default renderJobList;

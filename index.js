@@ -6,3 +6,5 @@ import './src/components/JobDetails.js';
 import './src/components/Sorting.js';
 import './src/components/Pagination.js';
 import './src/components/Router.js';
+import './src/components/bookmarks.js';
+import './src/components/Storage.js';

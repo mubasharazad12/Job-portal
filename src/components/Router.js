@@ -7,6 +7,7 @@ import {
 import renderSpinner from './Spinner.js';
 import renderJonDetails from './JobDetails.js';
 import renderError from './Error.js';
+import renderJobList from './JobList.js'
 
 
 async function  loadHashChnageHandler() {
@@ -14,6 +15,12 @@ async function  loadHashChnageHandler() {
 
 
     if(id){
+
+        document.querySelectorAll('.job-item--active').forEach(items =>{
+            items.classList.remove('job-item--active');
+        })
+
+
         jobDetailsContentEl.innerHTML = '';
         renderSpinner('job-details');
 
@@ -23,6 +30,8 @@ async function  loadHashChnageHandler() {
             const { jobItem } = data;
 
             state.activeJobItem = jobItem;
+
+            renderJobList();
     
             renderSpinner('job-details');
             renderJonDetails(jobItem);

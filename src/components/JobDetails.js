@@ -1,5 +1,6 @@
 import {
-    jobDetailsContentEl
+    jobDetailsContentEl,
+    state
 } from '../App.js'
 
 function renderJonDetails(jobItem, badgeColor) {
@@ -15,7 +16,7 @@ function renderJonDetails(jobItem, badgeColor) {
                         <div class="job-info__below-badge">
                             <time class="job-info__time">${jobItem.daysAgo}</time>
                             <button class="job-info__bookmark-btn">
-                                <i class="fa-solid fa-bookmark job-info__bookmark-icon"></i>
+                                <i class="fa-solid fa-bookmark job-info__bookmark-icon ${state.bookmarkJobItems.some(item => item.id === jobItem.id) && 'job-info__bookmark-icon--bookmarked'}"></i>
                             </button>
                         </div>
                     </div>
